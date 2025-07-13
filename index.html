@@ -3,14 +3,12 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>tv.garden - Mobile</title>
-    <!-- Using Google Fonts for Roboto and Icons -->
+    <title>tv.garden - Enhanced Mobile</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
-    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" rel="stylesheet" />
     <style>
-        /* --- Root Variables (from original design for consistency) --- */
+        /* --- Root Variables --- */
         :root {
             --primary-bg-color: #202124;
             --content-section-bg-color: #06080C;
@@ -22,6 +20,7 @@
             --brand-accent-color: #79C447;
             --card-bg-color: #2a2b2e;
             --text-color: #f1f1f1;
+            --ripple-color: rgba(255, 255, 255, 0.3);
         }
 
         /* --- Global Resets & Body --- */
@@ -29,6 +28,7 @@
             margin: 0;
             padding: 0;
             box-sizing: border-box;
+            -webkit-tap-highlight-color: transparent; /* Remove tap highlight on mobile */
         }
 
         html, body {
@@ -39,17 +39,11 @@
             color: var(--text-color);
         }
         
-        /* --- Material Icons Style --- */
-        .material-symbols-outlined {
-          font-variation-settings: 'FILL' 0, 'wght' 300, 'GRAD' 0, 'opsz' 24;
-          font-size: 28px;
-        }
-
         /* --- Main App Container --- */
         .mobile-container {
             display: flex;
             flex-direction: column;
-            height: 100svh; /* Use svh for mobile viewport height */
+            height: 100svh;
             background-color: var(--content-section-bg-color);
         }
 
@@ -59,11 +53,14 @@
             padding: 16px 20px;
             border-bottom: 1px solid var(--primary-border-color);
             flex-shrink: 0;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.2);
+            z-index: 10;
         }
         
         .main-header h1 {
             font-size: 1.5rem;
             font-weight: 500;
+            transition: opacity 0.3s ease;
         }
 
         /* --- Main Content Area --- */
@@ -73,34 +70,39 @@
             padding: 20px;
         }
         
-        /* Hide content views by default */
         .content-view {
             display: none;
+            animation: fadeIn 0.4s ease-in-out;
         }
         
-        /* Show the active view */
         .content-view.active {
             display: block;
         }
 
-        /* --- UI Components (Cards, Search Bar, etc.) --- */
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* --- UI Components --- */
         .category-title {
-            font-size: 1rem;
-            font-weight: 500;
+            font-size: 0.9rem;
+            font-weight: 700;
             color: var(--secondary-text-color);
             text-transform: uppercase;
-            letter-spacing: 0.5px;
-            margin-bottom: 12px;
+            letter-spacing: 0.8px;
+            margin-bottom: 16px;
+            padding-left: 4px;
         }
 
         .card-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+            grid-template-columns: repeat(auto-fill, minmax(130px, 1fr));
             gap: 16px;
-            margin-bottom: 24px;
+            margin-bottom: 28px;
         }
 
-        .country-card, .channel-card {
+        .country-card, .channel-card, .category-card {
             background-color: var(--card-bg-color);
             border-radius: 12px;
             padding: 16px;
@@ -111,21 +113,36 @@
             justify-content: center;
             gap: 10px;
             cursor: pointer;
-            transition: transform 0.2s ease, background-color 0.2s ease;
+            position: relative;
+            overflow: hidden;
+            transition: transform 0.2s ease;
         }
-
-        .country-card:active, .channel-card:active {
-            transform: scale(0.95);
-            background-color: var(--hover-highlight-bg-color);
+        
+        .country-card:active, .channel-card:active, .category-card:active {
+            transform: scale(0.96);
         }
         
         .country-card .flag {
-            font-size: 40px;
+            font-size: 36px;
+            line-height: 1;
         }
         
         .country-card .country-name {
             font-size: 1rem;
             font-weight: 500;
+        }
+        
+        .category-card {
+            flex-direction: row;
+            justify-content: flex-start;
+            gap: 12px;
+            grid-column: span 2; /* Make category cards wider */
+        }
+        
+        .category-card .icon {
+            width: 24px;
+            height: 24px;
+            color: var(--brand-accent-color);
         }
 
         .channel-card {
@@ -142,6 +159,7 @@
             background-color: var(--hover-highlight-bg-color);
             object-fit: cover;
             flex-shrink: 0;
+            border: 1px solid var(--primary-border-color);
         }
         
         .channel-info {
@@ -159,8 +177,6 @@
         .channel-category {
             font-size: 0.8rem;
             color: var(--secondary-text-color);
-            text-overflow: ellipsis;
-            overflow: hidden;
         }
 
         .search-bar {
@@ -170,7 +186,7 @@
         
         .search-bar input {
             width: 100%;
-            padding: 14px 14px 14px 48px;
+            padding: 14px 14px 14px 52px;
             border-radius: 28px;
             border: 1px solid var(--primary-border-color);
             background-color: var(--card-bg-color);
@@ -183,12 +199,14 @@
             border-color: var(--highlight-text-color);
         }
 
-        .search-bar .material-symbols-outlined {
+        .search-bar .icon {
             position: absolute;
-            left: 12px;
+            left: 16px;
             top: 50%;
             transform: translateY(-50%);
             color: var(--secondary-text-color);
+            width: 24px;
+            height: 24px;
         }
         
         .placeholder-text {
@@ -205,6 +223,9 @@
             border-top: 1px solid var(--primary-border-color);
             padding: 8px 0;
             flex-shrink: 0;
+            position: relative;
+            z-index: 10;
+            box-shadow: 0 -2px 10px rgba(0,0,0,0.2);
         }
 
         .nav-item {
@@ -215,33 +236,76 @@
             text-decoration: none;
             padding: 4px 12px;
             border-radius: 16px;
-            transition: color 0.2s ease, background-color 0.2s ease;
+            transition: color 0.2s ease, transform 0.2s ease;
+            position: relative;
+            overflow: hidden;
+            cursor: pointer;
+        }
+        
+        .nav-item:active {
+            transform: scale(0.95);
         }
 
+        .nav-item .icon {
+            width: 28px;
+            height: 28px;
+        }
+        
         .nav-item .nav-label {
             font-size: 0.75rem;
             margin-top: 2px;
+            font-weight: 500;
         }
         
         .nav-item.active {
             color: var(--highlight-text-color);
         }
 
-        .nav-item:active {
-            background-color: var(--hover-highlight-bg-color);
+        /* --- Ripple Effect --- */
+        .ripple {
+            position: absolute;
+            border-radius: 50%;
+            background-color: var(--ripple-color);
+            transform: scale(0);
+            animation: ripple-animation 0.6s linear;
+        }
+
+        @keyframes ripple-animation {
+            to {
+                transform: scale(4);
+                opacity: 0;
+            }
         }
         
-        /* --- Video Player Sheet (Conceptual) --- */
+        /* --- Video Player Sheet --- */
+        #player-overlay {
+            position: fixed;
+            inset: 0;
+            background-color: rgba(0, 0, 0, 0.3);
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+            opacity: 0;
+            visibility: hidden;
+            transition: opacity 0.4s ease, visibility 0s 0.4s;
+            z-index: 990;
+        }
+
+        #player-overlay.active {
+            opacity: 1;
+            visibility: visible;
+            transition: opacity 0.4s ease;
+        }
+
         .video-player-sheet {
             position: fixed;
             bottom: 0;
             left: 0;
             right: 0;
-            height: 90%;
-            background-color: #000;
+            max-height: 90%;
+            background-color: #111;
             border-top-left-radius: 20px;
             border-top-right-radius: 20px;
-            transform: translateY(100%); /* Initially hidden */
+            transform: translateY(100%);
             transition: transform 0.4s cubic-bezier(0.16, 1, 0.3, 1);
             z-index: 1000;
             display: flex;
@@ -249,7 +313,6 @@
             box-shadow: 0 -10px 30px rgba(0,0,0,0.3);
         }
 
-        /* Use this class to show the player */
         .video-player-sheet.active {
             transform: translateY(0);
         }
@@ -266,7 +329,7 @@
         .video-wrapper {
             width: 100%;
             aspect-ratio: 16 / 9;
-            background-color: #111;
+            background-color: #000;
             flex-shrink: 0;
         }
         
@@ -280,191 +343,236 @@
             flex-grow: 1;
             overflow-y: auto;
         }
+        
+        .channel-details-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            gap: 16px;
+        }
 
-        .channel-details h2 {
+        .channel-details-header h2 {
             font-size: 1.25rem;
-            margin-bottom: 8px;
+            flex-grow: 1;
         }
         
+        .player-action-btn {
+            background: none;
+            border: none;
+            color: var(--secondary-text-color);
+            cursor: pointer;
+            padding: 4px;
+            border-radius: 50%;
+            transition: color 0.2s, background-color 0.2s;
+        }
+        
+        .player-action-btn:hover {
+            background-color: var(--card-bg-color);
+        }
+
+        .player-action-btn .icon {
+            width: 24px;
+            height: 24px;
+        }
+        
+        #favorite-btn.favorited {
+            color: var(--brand-accent-color);
+        }
+
         .channel-details p {
             color: var(--secondary-text-color);
             line-height: 1.5;
+            margin-top: 8px;
         }
 
     </style>
 </head>
 <body>
 
+    <div id="player-overlay"></div>
     <div class="mobile-container">
         
         <header class="main-header">
-            <h1>Explore</h1>
+            <h1 id="main-header-title">Explore</h1>
         </header>
 
         <main class="main-content">
-            
             <!-- Explore View -->
             <section id="explore-view" class="content-view active">
                 <h2 class="category-title">Top Categories</h2>
                 <div class="card-grid">
-                    <article class="channel-card">
-                        <img src="https://via.placeholder.com/40/79C447/FFFFFF?text=N" class="channel-logo" alt="News Logo">
+                    <article class="category-card" data-ripple>
+                        <svg class="icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path fill="currentColor" d="M22 3l-1.67 1.67L18.67 3L17 4.67L15.33 3l-1.66 1.67L12 3l-1.67 1.67L8.67 3L7 4.67L5.33 3L3.67 4.67L2 3v16c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V3zm-11 16H4v-6h7v6zm9 0h-7v-2h7v2zm0-4h-7v-2h7v2zm0-4H4V8h16v3z"/></svg>
+                        <div class="channel-name">News</div>
+                    </article>
+                    <article class="category-card" data-ripple>
+                        <svg class="icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path fill="currentColor" d="M12 3l.01 10.55c-.59-.34-1.27-.55-2-.55C7.79 13 6 14.79 6 17s1.79 4 4.01 4S14 19.21 14 17V7h4V3h-6zM10 19c-1.1 0-2-.9-2-2s.9-2 2-2 2 .9 2 2-.9 2-2 2z"/></svg>
+                        <div class="channel-name">Music</div>
+                    </article>
+                </div>
+
+                <h2 class="category-title">Featured Channels</h2>
+                <div class="card-grid">
+                    <article class="channel-card" data-ripple>
+                        <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/6/65/Sky_News_logo_2020.svg/100px-Sky_News_logo_2020.svg.png" class="channel-logo" alt="Sky News">
                         <div class="channel-info">
-                            <div class="channel-name">News</div>
+                            <div class="channel-name">Sky News</div>
+                            <div class="channel-category">News</div>
                         </div>
                     </article>
-                    <article class="channel-card">
-                        <img src="https://via.placeholder.com/40/79C447/FFFFFF?text=S" class="channel-logo" alt="Sports Logo">
+                     <article class="channel-card" data-ripple>
+                        <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/c/c3/NASA_logo.svg/100px-NASA_logo.svg.png" class="channel-logo" alt="NASA TV">
                         <div class="channel-info">
-                            <div class="channel-name">Sports</div>
-                        </div>
-                    </article>
-                    <article class="channel-card">
-                        <img src="https://via.placeholder.com/40/79C447/FFFFFF?text=M" class="channel-logo" alt="Movies Logo">
-                        <div class="channel-info">
-                            <div class="channel-name">Movies</div>
-                        </div>
-                    </article>
-                    <article class="channel-card">
-                        <img src="https://via.placeholder.com/40/79C447/FFFFFF?text=K" class="channel-logo" alt="Kids Logo">
-                        <div class="channel-info">
-                            <div class="channel-name">Kids</div>
+                            <div class="channel-name">NASA TV</div>
+                            <div class="channel-category">Science</div>
                         </div>
                     </article>
                 </div>
 
                 <h2 class="category-title">Browse by Country</h2>
                 <div class="card-grid">
-                    <article class="country-card">
-                        <div class="flag">🇺🇸</div>
-                        <div class="country-name">USA</div>
-                    </article>
-                    <article class="country-card">
-                        <div class="flag">🇬🇧</div>
-                        <div class="country-name">UK</div>
-                    </article>
-                     <article class="country-card">
-                        <div class="flag">🇨🇦</div>
-                        <div class="country-name">Canada</div>
-                    </article>
-                     <article class="country-card">
-                        <div class="flag">🇦🇺</div>
-                        <div class="country-name">Australia</div>
-                    </article>
-                     <article class="country-card">
-                        <div class="flag">🇮🇳</div>
-                        <div class="country-name">India</div>
-                    </article>
-                     <article class="country-card">
-                        <div class="flag">🇯🇵</div>
-                        <div class="country-name">Japan</div>
-                    </article>
+                    <article class="country-card" data-ripple><div class="flag">🇺🇸</div><div class="country-name">USA</div></article>
+                    <article class="country-card" data-ripple><div class="flag">🇬🇧</div><div class="country-name">UK</div></article>
+                    <article class="country-card" data-ripple><div class="flag">🇨🇦</div><div class="country-name">Canada</div></article>
+                    <article class="country-card" data-ripple><div class="flag">🇦🇺</div><div class="country-name">Australia</div></article>
+                    <article class="country-card" data-ripple><div class="flag">🇮🇳</div><div class="country-name">India</div></article>
+                    <article class="country-card" data-ripple><div class="flag">🇯🇵</div><div class="country-name">Japan</div></article>
                 </div>
             </section>
 
             <!-- Search View -->
             <section id="search-view" class="content-view">
                 <div class="search-bar">
-                    <span class="material-symbols-outlined">search</span>
-                    <input type="text" placeholder="Search for channels or countries...">
+                    <svg class="icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path fill="currentColor" d="M15.5 14h-.79l-.28-.27A6.471 6.471 0 0 0 16 9.5A6.5 6.5 0 1 0 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19l-4.99-5zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14z"/></svg>
+                    <input type="text" placeholder="Search channels or countries...">
                 </div>
-                <!-- Search results would appear here -->
-                <div class="placeholder-text">
-                    <p>Find your favorite live channels from around the world.</p>
-                </div>
+                <div class="placeholder-text"><p>Find your favorite live channels from around the world.</p></div>
             </section>
 
             <!-- Favorites View -->
             <section id="favorites-view" class="content-view">
                  <h2 class="category-title">Your Favorite Channels</h2>
-                 <!-- Favorite channels would be listed here -->
-                 <div class="placeholder-text">
-                     <p>Your starred channels will appear here.</p>
-                 </div>
+                 <div class="placeholder-text"><p>Your starred channels will appear here.</p></div>
             </section>
-
         </main>
 
         <nav class="bottom-nav">
-            <a href="#" class="nav-item active">
-                <span class="material-symbols-outlined">public</span>
-                <span class="nav-label">Explore</span>
-            </a>
-            <a href="#" class="nav-item">
-                <span class="material-symbols-outlined">search</span>
-                <span class="nav-label">Search</span>
-            </a>
-            <a href="#" class="nav-item">
-                <span class="material-symbols-outlined">star</span>
-                <span class="nav-label">Favorites</span>
-            </a>
-             <a href="#" class="nav-item">
-                <span class="material-symbols-outlined">casino</span>
-                <span class="nav-label">Random</span>
-            </a>
+            <a class="nav-item active" data-target="explore-view" data-title="Explore" data-ripple><svg class="icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path fill="currentColor" d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-1 17.93c-3.95-.49-7-3.85-7-7.93 0-.62.08-1.21.21-1.79L8.99 15v1c0 1.1.9 2 2 2v1.93zm6.9-2.54c-.26-.81-1-1.4-1.9-1.4h-1v-3c0-.55-.45-1-1-1H9v-2h2c.55 0 1-.45 1-1V7h2c1.1 0 2-.9 2-2v-.41c2.93 1.19 5 4.06 5 7.41 0 2.08-.8 3.97-2.1 5.39z"/></svg><span class="nav-label">Explore</span></a>
+            <a class="nav-item" data-target="search-view" data-title="Search" data-ripple><svg class="icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path fill="currentColor" d="M15.5 14h-.79l-.28-.27A6.471 6.471 0 0 0 16 9.5A6.5 6.5 0 1 0 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19l-4.99-5zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14z"/></svg><span class="nav-label">Search</span></a>
+            <a class="nav-item" data-target="favorites-view" data-title="Favorites" data-ripple><svg class="icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path fill="currentColor" d="M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z"/></svg><span class="nav-label">Favorites</span></a>
+            <a id="random-btn" class="nav-item" data-ripple><svg class="icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path fill="currentColor" d="M20.5 11H19V7c0-1.1-.9-2-2-2h-4V3.5C13 2.12 11.88 1 10.5 1S8 2.12 8 3.5V5H4c-1.1 0-2 .9-2 2v3.8c0 .34.16.66.44.86l4.24 2.96c.26.18.58.28.92.28H18c1.1 0 2-.9 2-2v-1.5c.83 0 1.5-.67 1.5-1.5s-.67-1.5-1.5-1.5zM11 3.5c0-.28.22-.5.5-.5s.5.22.5.5V5h-1V3.5zM4 7h13v3.8c0 .07-.01.13-.03.2H9.6c-.49 0-.95-.19-1.29-.53L4 6.8V7zm14 4H9.6c.77 0 1.47.3 2.01.79.54.5.87 1.2.98 1.98l.12 1.23H18c.55 0 1 .45 1 1v1.5c0 .28-.22.5-.5.5s-.5-.22-.5-.5V14h-1.5v-1.5c0-1.38-1.12-2.5-2.5-2.5H6.22l-1.72-1.2V11H18z"/></svg><span class="nav-label">Random</span></a>
         </nav>
-
     </div>
     
-    <!-- Video Player Sheet (hidden by default) -->
-    <!-- Add the 'active' class to this div to simulate opening it -->
     <div id="video-player-sheet" class="video-player-sheet">
         <div class="player-handle"></div>
         <div class="video-wrapper">
-            <!-- The Video.js player would be initialized here -->
             <video poster="https://i.ytimg.com/vi/9Auq9mYxFEE/maxresdefault.jpg" controls>
                 <source src="#" type="video/mp4">
             </video>
         </div>
         <div class="channel-details">
-            <h2>Live News Broadcast</h2>
+            <div class="channel-details-header">
+                <h2>Live News Broadcast</h2>
+                <button id="favorite-btn" class="player-action-btn">
+                    <svg class="icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path fill="currentColor" d="M22 9.24l-7.19-.62L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21 12 17.27 18.18 21l-1.63-7.03L22 9.24zM12 15.4l-3.76 2.27 1-4.28-3.32-2.88 4.38-.38L12 6.1l1.71 4.04 4.38.38-3.32 2.88 1 4.28L12 15.4z"/></svg>
+                </button>
+                 <button id="player-close-btn" class="player-action-btn">
+                    <svg class="icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path fill="currentColor" d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12 19 6.41z"/></svg>
+                </button>
+            </div>
             <p>A 24/7 stream of the latest news from around the world. Sourced from United States.</p>
         </div>
     </div>
     
-    <!-- Basic JS to simulate tab switching and player opening -->
     <script>
-        const navItems = document.querySelectorAll('.nav-item');
-        const contentViews = document.querySelectorAll('.content-view');
-        const mainHeader = document.querySelector('.main-header h1');
-        
-        // Tab switching logic
-        navItems.forEach(item => {
-            item.addEventListener('click', (e) => {
-                e.preventDefault();
-                
-                navItems.forEach(i => i.classList.remove('active'));
-                item.classList.add('active');
-                
-                const targetLabel = item.querySelector('.nav-label').textContent;
-                mainHeader.textContent = targetLabel;
+        document.addEventListener('DOMContentLoaded', () => {
+            const navItems = document.querySelectorAll('.nav-item[data-target]');
+            const contentViews = document.querySelectorAll('.content-view');
+            const mainHeaderTitle = document.getElementById('main-header-title');
+            
+            // Tab switching
+            navItems.forEach(item => {
+                item.addEventListener('click', (e) => {
+                    e.preventDefault();
+                    
+                    const targetId = item.dataset.target;
+                    const targetTitle = item.dataset.title;
 
-                const targetViewId = `${targetLabel.toLowerCase()}-view`;
-                
-                contentViews.forEach(view => {
-                    view.classList.remove('active');
-                    if (view.id === targetViewId) {
-                        view.classList.add('active');
-                    }
+                    navItems.forEach(i => i.classList.remove('active'));
+                    item.classList.add('active');
+
+                    mainHeaderTitle.style.opacity = 0;
+                    setTimeout(() => {
+                        mainHeaderTitle.textContent = targetTitle;
+                        mainHeaderTitle.style.opacity = 1;
+                    }, 150);
+                    
+                    contentViews.forEach(view => {
+                        view.classList.remove('active');
+                        if (view.id === targetId) {
+                            view.classList.add('active');
+                        }
+                    });
                 });
             });
-        });
-        
-        // Video player simulation
-        const channelCards = document.querySelectorAll('.country-card, .channel-card');
-        const playerSheet = document.getElementById('video-player-sheet');
-        
-        channelCards.forEach(card => {
-           card.addEventListener('click', () => {
-               playerSheet.classList.add('active');
-           });
-        });
-        
-        playerSheet.addEventListener('click', (e) => {
-            // Clicking the handle or details area closes it
-            if(e.target.classList.contains('player-handle') || e.target.classList.contains('channel-details')) {
-                 playerSheet.classList.remove('active');
+
+            // Ripple Effect
+            function createRipple(event) {
+                const button = event.currentTarget;
+                const circle = document.createElement("span");
+                const diameter = Math.max(button.clientWidth, button.clientHeight);
+                const radius = diameter / 2;
+
+                circle.style.width = circle.style.height = `${diameter}px`;
+                circle.style.left = `${event.clientX - button.getBoundingClientRect().left - radius}px`;
+                circle.style.top = `${event.clientY - button.getBoundingClientRect().top - radius}px`;
+                circle.classList.add("ripple");
+
+                const ripple = button.getElementsByClassName("ripple")[0];
+                if (ripple) {
+                    ripple.remove();
+                }
+                button.appendChild(circle);
             }
+
+            const rippleButtons = document.querySelectorAll('[data-ripple]');
+            rippleButtons.forEach(button => {
+                button.addEventListener("click", createRipple);
+            });
+
+            // Video Player Logic
+            const channelCards = document.querySelectorAll('.country-card, .channel-card, .category-card');
+            const playerSheet = document.getElementById('video-player-sheet');
+            const playerOverlay = document.getElementById('player-overlay');
+            const playerCloseBtn = document.getElementById('player-close-btn');
+
+            function openPlayer() {
+                playerSheet.classList.add('active');
+                playerOverlay.classList.add('active');
+            }
+
+            function closePlayer() {
+                playerSheet.classList.remove('active');
+                playerOverlay.classList.remove('active');
+            }
+
+            channelCards.forEach(card => card.addEventListener('click', openPlayer));
+            playerCloseBtn.addEventListener('click', closePlayer);
+            playerOverlay.addEventListener('click', closePlayer);
+
+            // Favorite Button Toggle
+            const favoriteBtn = document.getElementById('favorite-btn');
+            favoriteBtn.addEventListener('click', () => {
+                favoriteBtn.classList.toggle('favorited');
+            });
+            
+            // Random Button
+            const randomBtn = document.getElementById('random-btn');
+            randomBtn.addEventListener('click', () => {
+                alert("Let's find you a random channel!");
+                // Future logic: pick and play a random channel
+            });
         });
     </script>
 
